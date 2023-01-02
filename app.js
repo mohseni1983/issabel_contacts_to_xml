@@ -1,13 +1,13 @@
-require('dotenv').config();
+//require('dotenv').config();
 const express=require('express');
 const mysql=require('mysql')
 const app=express()
 const connector=mysql.createConnection({
-    host: process.env.DB_HOST,
-    database: process.env.DB_DB,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT
+    host: 'localhost',
+    database: 'asterisk',
+    user: 'root',
+    password: '20242170',
+    port: 3306
 })
 
 app.use('/', (req,res)=>{
@@ -21,8 +21,12 @@ app.use('/', (req,res)=>{
                     let xmlData="<YealinkIPPhoneDirectory>"
                     xmlData+="<DirectoryEntry>"
                     for(let item of response){
-                        xmlData+=`<${item.Name}>${item.Telephone}</${item.Name}>`
-                    }
+                        if(!isNaN(item.Name))
+                            {item.Name = 'Ext-'+item.Name}
+                        xmlData+=`<${item.Name.replace(' ','_')}>${item.Telephone}</${item.Name.replace(' ','_')}>`
+
+
+		        }
                     xmlData+="</DirectoryEntry>"
                     xmlData+="</YealinkIPPhoneDirectory>"
                     resolve(xmlData)
